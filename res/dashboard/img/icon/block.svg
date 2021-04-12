@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>icon/block</title>
+    <desc>Created with Sketch.</desc>
+    <g id="icon/block" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Rectangle" transform="translate(2.000000, 2.000000)">
+            <g id="Mask" fill="#000000" fill-rule="nonzero">
+                <path d="M10,0 C12.6521649,0 15.195704,1.0535684 17.0710678,2.92893219 C18.9464316,4.80429597 20,7.3478351 20,10 C20,15.5228475 15.5228475,20 10,20 C7.3478351,20 4.80429597,18.9464316 2.92893219,17.0710678 C1.0535684,15.195704 0,12.6521649 0,10 C0,7.3478351 1.0535684,4.80429597 2.92893219,2.92893219 C4.80429597,1.0535684 7.3478351,0 10,0 L10,0 Z M10,2 C5.581722,2 2,5.581722 2,10 C2,11.85 2.63,13.55 3.68,14.91 L14.91,3.68 C13.55,2.63 11.85,2 10,2 L10,2 Z M10,18 C14.418278,18 18,14.418278 18,10 C18,8.15 17.37,6.45 16.32,5.09 L5.09,16.32 C6.45,17.37 8.15,18 10,18 Z" id="Shape"></path>
+            </g>
+            <rect fill="#ED365A" x="-2" y="-2" width="24" height="24"></rect>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/style.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/layout_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/type_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/component_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/animate.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/color.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/chart.css">
+</head>
+<body class="light_blue_bg">
+	<!--Top Navigation-->
+	<div class="navbar-header dark_highlight_bg white_highlight">
+		<!--Wrapper live area-->
+		<div class="live_area">
+			<ul class="nav navbar-top-links" id="top_navigation">
+				<li><a href="index.html">현황</a></li>
+				<li><a href="topology_1.html">토폴로지</a></li>
+				<li><a>플로우</a></li>
+				<li><a>위협</a></li>
+				<li><a>시스템</a></li>
+			</ul>
+		</div>
+		<!--Wrapper live area-->
+	</div>
+	<!--Sub Navigation-->
+	<div class="navbar-header white_highlight_bg dark_highlight">
+		<!--Wrapper live area-->
+		<div class="live_area">
+			<ul class="nav navbar-top-links">
+				<li><a href="topology_1.html">위협</a></li>
+				<li><a href="topology_2.html">상태</a></li>
+				<li><a href="topology_3.html">성능</a></li>
+			</ul>
+		</div>
+		<!--Wrapper live area-->
+	</div>
+	<!--Conent Area-->
+	<div class="live_area">
+		<div class="col1 margin_top_4x ibox-content bright_blue_bg" style="position: relative;" id="topology_threat">
+			<div class="flex_row topology_legend" id="topology_threat_legend"></div>
+			<div class="flex_row align_center topology_zoom_info" id="topology_threat_zoom_info">
+				<img src="res/dashboard/img/icon/ic_zoom.svg" style="margin-right: 4px"> <span>100%</span>
+			</div>
+			<div class="flex_col topology_tooltip box_shadow" id="topology_status_tooltip">
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="res/dashboard/js/d3.js"></script>
+<!-- <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script> -->
+<script type="text/javascript" src="res/dashboard/js/topology2.js"></script>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$.get("http://210.96.184.227:8282/json/topology/status",function(data){
+			var tolpology_threat_data = data.DATA;
+			console.log(tolpology_threat_data);
+			setTopology(tolpology_threat_data);
+		});
+	});
+
+</script>
+</html>

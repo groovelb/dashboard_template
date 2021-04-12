@@ -1,0 +1,310 @@
+/*legend*/
+.circle_legend{
+	width: 12px;
+	height: 12px;
+	border-radius: 6px;
+	overflow: hidden;
+	margin-right: 4px;
+}
+
+
+
+/*DataFlow Circle*/
+.reqData{
+	color:#4082F3;
+	stroke: #4082F3;
+	stroke-width: 0.5px;
+	transition: fill 0.3s , stroke 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.resData{
+	color:#ADC9F9;
+	stroke: #ADC9F9;
+	stroke-width: 0.5px;
+	transition: fill 0.3s , stroke 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.particle{
+	fill:#00C853;
+}
+.reqData_bg{
+	background-color: #4082F3;
+}
+.resData_bg{
+	background-color:#ADC9F9;
+}
+
+.flowStroke{
+	stroke: #25C8CA;
+	opacity: 0.096;
+}
+/*Node Type*/
+.node_circle{
+}
+.selected_node{
+	stroke: rgba(86,148,255,0);
+	stroke-width:3px;
+	transition: stroke-width 0.2s;
+	animation: stroke_blink 2s infinite;
+}
+@keyframes stroke_blink {
+	0%{stroke: rgba(86,148,255,0.64);}
+	50%{stroke: rgba(86,148,255,1);}
+	100%{stroke: rgba(86,148,255,0.64);}
+}
+.user{
+	color: #2f8cFa;
+}
+.controller{
+	color: #008FFF;
+}
+.app{
+	color: #f53a4f;
+}
+.departure{
+	color: #35C056;
+}
+.service{
+	color: #8d32ab;
+}
+.arrival{
+	color: #2fb1c2;
+}
+.perimeter{
+	color: #00C853;
+}
+.interface{
+	color: #f57a6f;
+}
+.gateway{
+	color: #8d62ab;
+}
+.red{
+	color:#ed365a;
+}
+.user_bg{
+	background-color: #008FFF;
+}
+.app_bg{
+	background-color: #f53a4f;
+}
+.departure_bg{
+	background-color: #35C056;
+}
+.service_bg{
+	background-color: #8d32ab;
+}
+.arrival_bg{
+	background-color: #2fb1c2;
+}
+
+/*Node Circle*/
+.user_node{
+	/*fill: #008FFFFF;	
+	stroke:#006FFF;*/
+	fill: #008FFF;
+	background-color:#008FFF;
+}
+
+.controller_node{
+	fill: #008FFF;
+	background-color: #008FFF;
+}
+.app_node{
+	/*fill: #FF7654FF;
+	stroke:#FF7600;*/
+	fill: #f53a4f;
+	background-color:#f53a4f;
+
+}
+.application_node{
+	fill: #f57a6f;
+	background-color: #f57a6f;
+}
+.interface_node{
+	fill: #f57a6f;
+	background-color: #f57a6f;
+}
+
+.departure_node{
+	fill: #35C056;
+	background-color: #35C056;
+
+}
+
+.service_node{
+	fill: #8d32ab;
+	background-color: #8d32ab;
+}
+.gateway_node{
+	fill: #8d62ab;
+	background-color: #8d62ab;
+}
+
+.arrival_node{
+	/*fill: #00A882FF;
+	stroke: #10C072;*/
+	fill: #2fb1c2;
+	background-color: #2fb1c2;
+
+}
+.perimeter_node{
+	fill: #00C853;
+	background-color: #00C853;
+}
+
+.source_node{
+	background-color:  #95e050;
+	fill: #95e050;
+}
+.destination_node{
+	background-color: #4fbaa2;
+	fill: #4fbaa2;
+}
+.block_circle{
+	stroke:#fff;
+	background-color: #ed365a;
+	stroke-width:1.5px;
+	fill: #ed365a;
+}
+.red_circle{
+	stroke:#fff;
+	background-color: #ed365a;
+	stroke-width:1.5px;
+	fill: #ed365a;
+}
+.red_node{
+	background-color:#ed365a;
+}
+/*Tunnel Color based on Flow rate*/
+.flow_normal{
+	fill: #00C85332;
+	stroke: #00C853;
+	stroke-width: 0.75px;
+}
+.flow_bad{
+	fill: #FFAB0022;
+	stroke: #FFAB00;
+	stroke-width: 0.75px;
+}
+.flow_worst{
+	fill: #ed365a32;
+	stroke:#ed365a;
+	stroke-width: 0.75px;
+}
+.blockLine{
+	stroke-linejoin:"round";
+}
+.blockText{
+	fill:#ed365a;
+}
+.gauge{
+	position: absolute;
+	top: calc((92px - 55px)/2 - 4px);
+	left: calc((100% - 65px)/2);
+}
+.needle{
+	position: absolute;
+	top:calc((92px - 18px)/2 - 13.2px);
+	left:calc((100% - 6px)/2);
+ 	transform-origin: center center;
+ 	transition: transform 1s cubic-bezier(.75,-0.5,0,1.75);
+}
+.green_line{
+	stroke: #00C853;
+	stroke-width: 1px;
+	fill: none;
+}
+.green_area{
+	fill: #bce2cc;
+	opacity: 0.64;
+}
+.current_point{
+	stroke: #00C853;
+	fill: #00C853;
+	animation-name: blink;
+  	animation-duration: 1s;
+  	animation-fill-mode: forwards;
+  	animation-iteration-count: infinite;
+}
+@keyframes blink {
+  0% {opacity: 00.48;}
+  50% {opacity: 1;}
+  100% {opacity: 0.48;}
+}
+
+.grid line {
+  stroke: #f0f0f0;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+
+.grid path {
+  stroke-width: 0;
+}
+.axis_light line {
+  stroke: #e0e0e0;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+.axis_light path {
+  stroke: #e0e0e0;
+  stroke-opacity: 0.7;
+  shape-rendering: crispEdges;
+}
+.axis_light text {
+  fill: #c0c0c0;
+}
+
+
+/*Topology*/
+.link{
+	stroke: #A5C8DA;
+	stroke-width:4px;
+	opacity: 0.48;
+}
+.block_count{
+	pointer-events: none;
+	fill:#fff;
+}
+.topology_legend{
+	position: absolute;
+	background-color: rgba(255,255,255,0.64);
+	top:0;
+	right:0;
+	padding: 12px;
+	/*width:calc(100% - 24px);*/
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+.node_count{
+	pointer-events: none;
+}
+.topology_zoom_info{
+	position: absolute;
+	top:0;
+	left:0;
+	padding: 12px;
+}
+.topology_tooltip{
+	position: absolute;
+	top:48px;
+	left:16px;
+	width: 208px;
+	border-style: solid;
+	border-width: 0px 0.5px 0.5px 0.5px;
+	border-color: #eeeeee;
+}
+.tooltip_title{
+	background-color: #ffffff;
+	width: calc(100%);
+	padding:6px 12px;
+	border-bottom: solid 0.5px #eeeeee;
+}
+.tooltip_list{
+	background-color: #ffffff;
+	width: calc(100%);
+	padding:6px 12px;
+	border-bottom: solid 0.5px #eeeeee;
+}

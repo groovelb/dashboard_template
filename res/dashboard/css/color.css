@@ -1,0 +1,51 @@
+.dark_highlight{
+	color: #122229;
+}
+.dark_highlight_bg{
+	background-color: #2F4050;
+}
+.white_highlight{
+	color:#ffffff !important;
+}
+.white_highlight_bg{
+	background-color:#ffffff;
+}
+
+
+.light_blue_bg{
+	/* background-color: #F4F7FC; */
+	background-color: #E9EDEF;
+}
+.bright_blue_bg{
+	background-color: #FAFEFE;
+}
+
+
+
+/*Color by Name*/
+/*Threat Type*/
+.worst{
+	color: #ed365a;
+	transition: color 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.access_block{
+	color: #ed365a;
+	transition: color 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.threat_block{
+	color: #ed365a;
+	transition: color 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.danger{
+	color: #ff7600;
+	transition: color 0.3s;
+	transition-timing-function: ease-in-out;
+}
+.normal{
+	color: #00a882;
+	transition: color 0.3s;
+	transition-timing-function: ease-in-out;
+}

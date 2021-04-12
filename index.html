@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/style.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/layout_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/type_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/component_dashboard.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/animate.css">
+	<link rel="stylesheet" type="text/css" href="res/dashboard/css/color_dark.css">
+	<!-- <link rel="stylesheet" type="text/css" href="res/dashboard/css/chart.css"> -->
+</head>
+<body class="dark_highlight2_bg">
+	<!--Top Navigation-->
+	<div class="navbar-header dark_highlight_bg">
+		<!--Wrapper live area-->
+		<div class="live_area">
+			<ul class="nav navbar-top-links" id="top_navigation">
+				<li><a href="index.html">OVERVIEW</a></li>
+				<li><a href="topology_1.html">NETWORK</a></li>
+				<!-- <li><a>플로우</a></li>
+				<li><a>위협</a></li>
+				<li><a>시스템</a></li> -->
+		</ul>
+		</div>
+		<!--Wrapper live area-->
+	</div>
+	<!--Top Navigation-->
+
+	<!--Conent Area-->
+	<div class="live_area">
+		<!--Flow Chart Section-->
+		<h2 class="header_section">
+			Real Time Overview
+		</h2>
+		<p>
+			Summary of Key Indicator In Real Time
+		</p>
+		<div class="flex_row col1 space_between">
+			<div class="col2_mg_1x flex_row_child ibox content_container">
+				<div class="ibox-title">
+					SECTION 1
+				</div>
+				<div class="col1 ibox-content bright_blue_bg" id="appFlow">
+					<div class="flex_row col1 margin_bottom_4x">
+						<div class="flex_col align_center left_align col2">
+							<strong class="m-b-xs">
+								Volume Data
+							</strong>
+							<div class="col1" id="appFlowData">
+								
+							</div>
+							<div class="flex_row col1 justify_center margin_bottom_2x" id="appFlowDataLegend">
+						</div>
+						</div>
+						<div class="flex_row col2 text_center">
+							<strong class="m-b-xs col1 left_align" style="height: 19px">current value</strong>
+							<div class="col2 left_align" id="appMeanResRateChart" style="width:70%"></div>
+							<div class="col2 left_align flex_col flex_center text_center" style="width:30%">
+								<div class="col1 flex_row flex_center" id="appFlowResponseSpeed">
+									<h1 style="display: inline-block;"><strong id="app_mean_res_rate"></strong></h1>
+									<span>&nbsp;ms</span><br>
+									<p class="col1 text_center" id="app_mean_res_level"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="flex_row col1" id="appFlowChartLegend"></div>
+					<div class="flex_col col1" id="appFlowChart">
+					</div>
+				</div>
+			</div>
+			<div class="col2_mg_1x flex_row_child ibox content_container">
+				<div class="ibox-title">
+					SECTION 2
+				</div>
+				<div class="col1 ibox-content bright_blue_bg" id="generalFlow">
+					<div class="flex_row col1 margin_bottom_4x">
+						<div class="flex_col left_align align_center col2">
+							<strong class="m-b-xs">
+								Volume Data
+							</strong>
+							<div class="col1" id="generalFlowData">
+							</div>
+							<div class="flex_row col1 justify_center margin_bottom_2x" id="generalFlowDataLegend">
+							</div>
+						</div>
+						<div class="flex_row col2 text_center">
+							<strong class="m-b-xs col1 left_align" style="height: 19px">current value</strong>
+							<div class="col2 left_align" id="generalMeanResRateChart" style="width:70%"></div>
+							<div class="col2 left_align flex_col flex_center text_center" style="width:30%">
+								<div class="col1 flex_row flex_center" id="generalFlowReponseSpeed">
+									<h1 style="display: inline-block;"><strong id="general_mean_res_rate"></strong></h1>
+									<span>&nbsp;ms</span>
+									<p class="col1 text_center" id="general_mean_res_level"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="flex_row col1" id="generalFlowChartLegend">
+					</div>
+					<div class="flex_col col1" id="generalFlowChart">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--Flow Chart Section-->
+		<!--Key Measurement Cards Section-->
+		<div class="flex_row col1 space_between">
+			<div class="col2_mg_1x ibox">
+				<h2 class="header_section">
+					Countable Indicator
+				</h2>
+				<p>
+					Quick View of Countable Data As Indicators
+				</p>
+				<div class="flex_row col1 space_between" id="threatEvent">
+				</div>
+			</div>
+			<div class="col2_mg_1x ibox">
+				<h2 class="header_section">
+					Rating Indicator
+				</h2>
+				<p>
+					Quick View of Rating Data As System Metrics
+				</p>
+				<div class="flex_row col1 space_between" id="systemMeasurement">
+				</div>
+			</div>
+		</div>
+		<!--Key Measurement Cards Section-->
+
+		<!--STATUS ANLYASIS-->
+		<!--STATUS ANLYASIS-->
+		<!--STATUS ANLYASIS-->
+		<h2 class="header_section">
+			Comparable Indicators
+		</h2>
+		<p>
+			Listing of multiple sets of comparable indicatons with same scale.
+		</p>
+		<div class="flex_row col1 space_between margin_bottom_16x" id="statusAnalysis">
+		</div>
+		<!--STATUS ANLYASIS-->
+		<!--STATUS ANLYASIS-->
+		<!--STATUS ANLYASIS-->
+
+	</div>
+</body>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.js"></script> -->
+<!-- <script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script> -->
+<script type="text/javascript" src="res/dashboard/js/d3.js"></script>
+<script type="text/javascript" src="https://d3js.org/d3-random.v2.min.js"></script>
+<!-- <script src="https://d3js.org/d3-dispatch.v1.min.js"></script>
+<script src="https://d3js.org/d3-quadtree.v1.min.js"></script>
+<script src="https://d3js.org/d3-timer.v1.min.js"></script>
+<script src="https://d3js.org/d3-force.v2.min.js"></script> -->
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		var duration = 1400;
+		/*FLOW CHART SECTION - START*/
+		/*GET FLOW CHART DATA*/
+
+		// APP FLOW
+		let appFlowData = {
+			req_data: Math.round(Math.random()*40),
+			res_data: Math.round(Math.random()*40),
+			mean_res_rate: Math.round(Math.random()*20),
+			user: Math.round(Math.random()*40),
+			application: Math.round(Math.random()*40),
+			source: Math.round(Math.random()*40),
+			service: Math.round(Math.random()*40),
+			destination: Math.round(Math.random()*40),
+			flow: Math.round(Math.random()*300) + 300,
+			user_block: Math.round(Math.random()*40),
+			application_block: Math.round(Math.random()*40),
+			source_block: Math.round(Math.random()*40),
+			flow_block: Math.round(Math.random()*40),
+			req_data_per: Math.round(Math.random()*40),
+			res_data_per: Math.round(Math.random()*40),
+			flow_per: Math.round(Math.random()*40),
+		}
+
+		setAppFlowChart(appFlowData);
+		var updateAppFlowData = () => {
+			appFlowData = {
+				req_data: Math.round(Math.random()*40),
+				res_data: Math.round(Math.random()*40),
+				mean_res_rate: Math.round(Math.random()*20),
+				user: Math.round(Math.random()*40),
+				application: Math.round(Math.random()*40),
+				source: Math.round(Math.random()*40),
+				service: Math.round(Math.random()*40),
+				destination: Math.round(Math.random()*40),
+				flow: Math.round(Math.random()*300) + 300,
+				user_block: Math.round(Math.random()*40),
+				application_block: Math.round(Math.random()*40),
+				source_block: Math.round(Math.random()*40),
+				flow_block: Math.round(Math.random()*40),
+				req_data_per: Math.round(Math.random()*40),
+				res_data_per: Math.round(Math.random()*40),
+				flow_per: Math.round(Math.random()*40),
+			};
+			updateAppFlowChart(appFlowData);
+		}
+
+		// GENERAL FLOW
+		let generalFlowData = {
+			req_data: Math.round(Math.random()*40),
+			res_data: Math.round(Math.random()*40),
+			mean_res_rate: Math.round(Math.random()*20),
+			user: Math.round(Math.random()*40),
+			application: Math.round(Math.random()*40),
+			source: Math.round(Math.random()*40),
+			service: Math.round(Math.random()*40),
+			destination: Math.round(Math.random()*40),
+			flow: Math.round(Math.random()*300) + 300,
+			user_block: Math.round(Math.random()*40),
+			application_block: Math.round(Math.random()*40),
+			source_block: Math.round(Math.random()*40),
+			flow_block: Math.round(Math.random()*40),
+			req_data_per: Math.round(Math.random()*40),
+			res_data_per: Math.round(Math.random()*40),
+			flow_per: Math.round(Math.random()*40),
+		}
+		setGeneralFlowChart(generalFlowData);
+		var updateGeneralFlowData = () => {
+			generalFlowData = {
+				req_data: Math.round(Math.random()*40),
+				res_data: Math.round(Math.random()*40),
+				mean_res_rate: Math.round(Math.random()*20),
+				user: Math.round(Math.random()*40),
+				application: Math.round(Math.random()*40),
+				source: Math.round(Math.random()*40),
+				service: Math.round(Math.random()*40),
+				destination: Math.round(Math.random()*40),
+				flow: Math.round(Math.random()*300) + 300,
+				user_block: Math.round(Math.random()*40),
+				application_block: Math.round(Math.random()*40),
+				source_block: Math.round(Math.random()*40),
+				flow_block: Math.round(Math.random()*40),
+				req_data_per: Math.round(Math.random()*40),
+				res_data_per: Math.round(Math.random()*40),
+				flow_per: Math.round(Math.random()*40),
+			};
+			updateGeneralFlowChart(generalFlowData);
+		}
+		
+		// SYSTEM INDICATOR
+		let threatData = {
+			serious: Math.round(Math.random()*40),
+			danger: Math.round(Math.random()*40),
+			normal: Math.round(Math.random()*40),
+			// connect_block: Math.round(Math.random()*40),
+			// threat_block: Math.round(Math.random()*40),
+			black_list: Math.round(Math.random()*40)
+		};
+		setThreatEvent(threatData);
+		var updateThreatEventData = () => {
+			threatData = {
+				serious: Math.round(Math.random()*40),
+				danger: Math.round(Math.random()*40),
+				normal: Math.round(Math.random()*40),
+				// connect_block: Math.round(Math.random()*40),
+				// threat_block: Math.round(Math.random()*40),
+				black_list: Math.round(Math.random()*40)
+			};
+			updateThreatEvent(threatData);
+		}
+
+
+		// SYSTEM INDICATOR
+		let systemIndicatorData = {
+			serious: Math.round(Math.random()*40),
+			danger: Math.round(Math.random()*40),
+			normal: Math.round(Math.random()*40),
+			// connect_block: Math.round(Math.random()*40),
+			// threat_block: Math.round(Math.random()*40),
+			// black_list: Math.round(Math.random()*40),
+			cpu: Math.round(Math.random()*100),
+			memory: Math.round(Math.random()*100),
+			network: Math.round(Math.random()*100),
+			storage: Math.round(Math.random()*100),
+		};
+
+		setSystemManageIndicator(systemIndicatorData);
+		var updateSystemManageIndicatorData = () => {
+			systemIndicatorData = {
+				serious: Math.round(Math.random()*40),
+				danger: Math.round(Math.random()*40),
+				normal: Math.round(Math.random()*40),
+				// connect_block: Math.round(Math.random()*40),
+				// threat_block: Math.round(Math.random()*40),
+				// black_list: Math.round(Math.random()*40),
+				cpu: Math.round(Math.random()*100),
+				memory: Math.round(Math.random()*100),
+				network: Math.round(Math.random()*100),
+				storage: Math.round(Math.random()*100),
+			};
+			updateSystemManageIndicator(systemIndicatorData);
+		}
+
+		/*Line Graph for System Status*/
+		var status_list = [
+
+		{
+			"title":"Indicator1",
+			"title_eng":"ind_accessBlock",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator2",
+			"title_eng":"ind_threatBlock",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator3",
+			"title_eng":"ind_networkFlow",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator4",
+			"title_eng":"ind_networkQuality",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator5",
+			"title_eng":"ind_user",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator6",
+			"title_eng":"ind_app",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator7",
+			"title_eng":"ind_resData",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator8",
+			"title_eng":"ind_reqData",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator9",
+			"title_eng":"ind_service",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator10",
+			"title_eng":"ind_departure",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator11",
+			"title_eng":"ind_arrival",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator12",
+			"title_eng":"ind_resource",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator13",
+			"title_eng":"ind_cpu",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator14",
+			"title_eng":"ind_memory",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator15",
+			"title_eng":"ind_network",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		},
+		{
+			"title":"Indicator16",
+			"title_eng":"ind_storage",
+			"data":[],
+			"indicator_Xmax":0,
+			"indicator_current_x":0,
+			"scaleObject":{
+				xScale:null,
+				ySale:null,
+				xAxis:null
+			},
+			"line":null,
+			"area":null
+		}
+	];
+		
+	const randomValueForGraph = () => {
+		return { value:  Math.round(Math.random()*1000)};
+	}
+		setSystemIndicatorDiv(status_list);
+
+		status_list.forEach((status_item) => {
+			let data = randomValueForGraph();
+			setSystemIndicator(status_item,data);
+		});
+
+		var updateSystemIndicatorData = () => {
+			status_list.forEach((status_item) => {
+				let data = randomValueForGraph();
+				updateSystemIndicator(status_item,data);
+			});
+		}
+		// status_list.forEach(function(status_item){
+		// 	$.get(indicator_basic_url + "?id=" + status_item.title_eng, function(data){
+		// 		var indicatorData = data.DATA;
+		// 		status_item.data;
+		// 		setSystemIndicator(status_item,indicatorData);
+		// 	});
+		// });
+		// var updateSystemIndicatorData = function(){
+		// 	status_list.forEach(function(status_item){
+		// 		$.get(indicator_basic_url + "?id=" + status_item.title_eng, function(data){
+		// 			var indicatorData = data.DATA;
+		// 			status_item.data;
+		// 			updateSystemIndicator(status_item,indicatorData);
+		// 		});
+		// 	});
+		// }
+		//setInterval(updateSystemIndicatorData, duration);
+
+		// setInterval(updateViz, duration);
+		var sessionNum = 0;
+		var sessionCheck = [];
+		var isUpdate=false;
+		var duration_offset = 50;
+		sessionCheck.push(isUpdate);
+
+		window.requestAFrame = (function() {
+
+			alert(window.requestAnimationFrame);
+			
+			return window.requestAnimationFrame || 
+				   window.webkitRequestAnimationFrame ||
+				   window.mozRequestAnimationFrame ||
+				   window.oRequestAnimationiFrame ||
+
+				function(callback) {
+					console.log("requestAFrame doesn't support");
+					return window.setTimeout(callback, duration);
+				};
+		})();
+
+		function updateViz(timeStamp){
+
+			var sessionTime = timeStamp%duration;
+			if((duration-duration_offset<sessionTime)&&(sessionCheck[sessionNum]==false)){
+				updateAppFlowData();
+				updateGeneralFlowData();
+				updateSystemManageIndicatorData();
+				updateThreatEventData();
+				updateSystemIndicatorData();
+				// updateThreatEventData();
+				// updateSystemManageIndicatorData();
+				// updateSystemIndicatorData();
+				sessionCheck[sessionNum] = true;
+				sessionNum++;
+				sessionCheck.push(isUpdate);
+				console.log('update!');
+			}
+			window.requestAFrame(updateViz);
+			// requestAnimationFrame(updateViz);
+		}
+		window.requestAFrame(updateViz);
+		// requestAnimationFrame(updateViz);
+
+	});
+</script>
+<script type="text/javascript" src="res/dashboard/js/appFlowChart2.js"></script>
+<script type="text/javascript" src="res/dashboard/js/generalFlowChart.js"></script>
+<script type="text/javascript" src="res/dashboard/js/keyMeasurement.js"></script>
+<script type="text/javascript" src="res/dashboard/js/lineCharts.js"></script>
+</html>
