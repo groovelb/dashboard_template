@@ -174,7 +174,7 @@ function setGeneralFlowChart(flowData) {
 		})
 		.attr("fill", function (d) {
 			if (d.dataType == "resData") {
-				var color = d3.color("#7FABF6");
+				var color = d3.color("#D81B60");
 			}
 			else {
 				var color = d3.color("#004AE4");
@@ -729,7 +729,7 @@ function updateGeneralFlowChart(flowData) {
 		})
 		.attr("fill", function (d) {
 			if (d.dataType == "resData") {
-				var color = d3.color("#7FABF6");
+				var color = d3.color("#D81B60");
 			}
 			else if (d.dataType == "reqData") {
 				var color = d3.color("#004AE4");
@@ -924,7 +924,7 @@ function updateGeneralFlowChart(flowData) {
 
 	generalNodeItem.append("circle")
 		.attr("class", function (d) {
-			return d.node_title_eng;
+			return d.node_title_eng + ' node';
 		})
 		.attr("r", 24)
 		.attr("cx", function (d) {

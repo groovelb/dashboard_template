@@ -9,7 +9,7 @@ body{
 	background-color: #002035;
 }
 .dark_highlight_bg{
-	background-color: #2F4050;
+	background-color: #122229;
 }
 .white_highlight{
 	color:#ffffff !important;
@@ -80,8 +80,8 @@ body{
 	transition-timing-function: ease-in-out;
 }
 .resData{
-	color:#7FABF6;
-	stroke: #7FABF6;
+	color:#D81B60;
+	stroke: #D81B60;
 	stroke-width: 0.5px;
 	transition: fill 0.3s , stroke 0.3s;
 	transition-timing-function: ease-in-out;
@@ -93,7 +93,7 @@ body{
 	background-color: #004AE4;
 }
 .resData_bg{
-	background-color:#7FABF6;
+	background-color:#D81B60;
 }
 
 .flowStroke{
@@ -116,22 +116,22 @@ body{
 	100%{stroke: rgba(86,148,255,0.64);}
 }
 .user{
-	color: #2f8cFa;
+	color: #1f4cca;
 }
 .controller{
 	color: #008FFF;
 }
 .app{
-	color: #f53a4f;
+	color: #D0304A;
 }
 .departure{
-	color: #35C056;
+	color: #10A02f;
 }
 .service{
-	color: #8d32ab;
+	color: #7d229b;
 }
 .arrival{
-	color: #2fb1c2;
+	color: #00a080;
 }
 .perimeter{
 	color: #00C853;
@@ -140,7 +140,7 @@ body{
 	color: #f57a6f;
 }
 .gateway{
-	color: #8d62ab;
+	color: #7d229b;
 }
 .red{
 	color:#ed365a;
@@ -149,24 +149,24 @@ body{
 	background-color: #008FFF;
 }
 .app_bg{
-	background-color: #f53a4f;
+	background-color: #D0304A;
 }
 .departure_bg{
-	background-color: #35C056;
+	background-color: #10A02f;
 }
 .service_bg{
-	background-color: #8d32ab;
+	background-color: #7d229b;
 }
 .arrival_bg{
-	background-color: #2fb1c2;
+	background-color: #00a080;
 }
 
 /*Node Circle*/
 .user_node{
 	/*fill: #008FFFFF;	
 	stroke:#006FFF;*/
-	fill: #008FFF;
-	background-color:#008FFF;
+	fill: #1f4cca;
+	background-color:#1f4cca;
 }
 
 .controller_node{
@@ -176,8 +176,8 @@ body{
 .app_node{
 	/*fill: #FF7654FF;
 	stroke:#FF7600;*/
-	fill: #f53a4f;
-	background-color:#f53a4f;
+	fill: #D0304A;
+	background-color:#D0304A;
 
 }
 .application_node{
@@ -190,25 +190,25 @@ body{
 }
 
 .departure_node{
-	fill: #35C056;
-	background-color: #35C056;
+	fill: #10A02f;
+	background-color: #10A02f;
 
 }
 
 .service_node{
-	fill: #8d32ab;
-	background-color: #8d32ab;
+	fill: #7d229b;
+	background-color: #7d229b;
 }
 .gateway_node{
-	fill: #8d62ab;
-	background-color: #8d62ab;
+	fill: #7d229b;
+	background-color: #7d229b;
 }
 
 .arrival_node{
 	/*fill: #00A882FF;
 	stroke: #10C072;*/
-	fill: #2fb1c2;
-	background-color: #2fb1c2;
+	fill: #00a080;
+	background-color: #00a080;
 
 }
 .perimeter_node{
@@ -221,8 +221,8 @@ body{
 	fill: #95e050;
 }
 .destination_node{
-	background-color: #4fbaa2;
-	fill: #4fbaa2;
+	background-color: #00a080;
+	fill: #00a080;
 }
 .block_circle{
 	stroke:#fff;

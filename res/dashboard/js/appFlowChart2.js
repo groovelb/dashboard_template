@@ -176,7 +176,7 @@ function setAppFlowChart(flowData){
 		})
 		.attr("fill",function(d){
 			if(d.dataType == "resData"){
-				var color = d3.color("#7FABF6");
+				var color = d3.color("#D81B60");
 			}
 			else if(d.dataType == "reqData"){
 				var color = d3.color("#4082F3");
@@ -699,7 +699,7 @@ function updateAppFlowChart(flowData){
 		})
 		.attr("fill",function(d){
 			if(d.dataType == "resData"){
-				var color = d3.color("#7FABF6");
+				var color = d3.color("#D81B60");
 			}
 			else if(d.dataType == "reqData"){
 				var color = d3.color("#004AE4");
