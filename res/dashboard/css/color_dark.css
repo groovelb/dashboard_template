@@ -3,10 +3,10 @@ body{
 }
 
 .dark_highlight{
-	color: #122229;
+	color: #002035;
 }
 .dark_highlight2_bg{
-	background-color: #122229;
+	background-color: #002035;
 }
 .dark_highlight_bg{
 	background-color: #2F4050;
@@ -386,12 +386,12 @@ body{
 }
 
 .ibox-content{
-	background-color: #122229 !important;
+	background-color: #002035 !important;
 	border: none !important;
 }
 
 .content_container{
-	background-color: #122229 !important;
+	background-color: #002035 !important;
 	border: solid 0.75px #2F4050 !important;
 	border-radius: 2px !important;
 	overflow: hidden !important;
