@@ -11,6 +11,46 @@
 	<link rel="stylesheet" type="text/css" href="res/dashboard/css/animate.css">
 	<link rel="stylesheet" type="text/css" href="res/dashboard/css/color_dark.css">
 	<!-- <link rel="stylesheet" type="text/css" href="res/dashboard/css/chart.css"> -->
+	<style>
+		@media (max-width: 640px) {
+			/* 가로로 배치된 섹션들을 세로로 변경 */
+			.flex_row.col1.space_between {
+				flex-direction: column;
+				align-items: center; /* 가운데 정렬 (선택 사항) */
+			}
+			/* 각 섹션의 너비를 100%로 설정하고 가로 마진 제거 */
+			.flex_row.col1.space_between > .col2_mg_1x {
+				width: 100%;
+				max-width: 100%; /* 최대 너비 제한 해제 */
+				margin-left: 0;
+				margin-right: 0;
+				margin-bottom: 2rem; /* 요소 사이에 세로 간격 추가 */
+			}
+			/* 마지막 섹션 하단 마진 제거 (선택 사항) */
+			.flex_row.col1.space_between > .col2_mg_1x:last-child {
+				margin-bottom: 0;
+			}
+			/* 상태 분석 차트 컨테이너 처리 */
+			#statusAnalysis {
+				flex-direction: column; /* 혹시 flex_row 가 아니더라도 대비 */
+				align-items: center;
+			}
+			#statusAnalysis > div {
+				/* statusAnalysis의 직접 자식들이 차트 컨테이너라고 가정 */
+				width: 100% !important; /* 기존 스타일 덮어쓰기 */
+				max-width: 100%;
+				margin-bottom: 2rem; /* 요소 사이에 세로 간격 추가 */
+			}
+			 #statusAnalysis > div:last-child {
+				margin-bottom: 0;
+			}
+
+			/* 추가: ibox 내부 컨텐츠 패딩 조절 (선택 사항) */
+			.ibox-content {
+				padding: 10px; /* 모바일에서 패딩 줄이기 */
+			}
+		}
+	</style>
 </head>
 <body class="dark_highlight2_bg">
 	<div id="loading-screen">
@@ -23,7 +63,7 @@
 		<div class="live_area">
 			<ul class="nav navbar-top-links" id="top_navigation">
 				<li><a href="index.html">OVERVIEW</a></li>
-				<li><a href="topology_1.html">NETWORK</a></li>
+				<!-- <li><a href="topology_1.html">NETWORK</a></li> -->
 				<!-- <li><a>플로우</a></li>
 				<li><a>위협</a></li>
 				<li><a>시스템</a></li> -->
@@ -616,6 +656,45 @@
 
 		// 모든 초기화가 끝난 후 로딩 화면 숨기기
 		$('#loading-screen').fadeOut(500); // 0.5초 동안 서서히 사라지도록
+
+		// --- 반응형 차트 처리 시작 ---
+		function resizeCharts() {
+			console.log("Resizing charts..."); // 디버깅용 로그
+			// 각 차트 업데이트 함수 호출 (데이터는 업데이트하지 않고 크기만 조절하도록 각 JS 파일 수정 필요)
+			// 임시로 기존 업데이트 함수 호출 (데이터도 함께 업데이트됨)
+			if (typeof updateAppFlowChart === 'function' && typeof appFlowData !== 'undefined') {
+				updateAppFlowChart(appFlowData);
+			}
+			if (typeof updateGeneralFlowChart === 'function' && typeof generalFlowData !== 'undefined') {
+				updateGeneralFlowChart(generalFlowData);
+			}
+			if (typeof updateSystemManageIndicator === 'function' && typeof systemIndicatorData !== 'undefined') {
+				updateSystemManageIndicator(systemIndicatorData);
+			}
+			if (typeof updateThreatEvent === 'function' && typeof threatData !== 'undefined') {
+				updateThreatEvent(threatData);
+			}
+
+			// 라인 차트 업데이트 (데이터 구조 고려)
+			if (typeof status_list !== 'undefined' && typeof updateSystemIndicator === 'function') {
+				status_list.forEach((status_item) => {
+					// 현재는 데이터도 랜덤으로 재생성됨. 크기만 조절하도록 수정 필요.
+					let data = randomValueForGraph(); // 임시로 새 데이터 사용
+					updateSystemIndicator(status_item, data);
+				});
+			}
+		}
+
+		// Debounce resize event
+		let resizeTimeout;
+		window.addEventListener('resize', () => {
+			clearTimeout(resizeTimeout);
+			resizeTimeout = setTimeout(resizeCharts, 250); // 250ms 디바운스
+		});
+
+		// 초기 로드 시 차트 크기 조정
+		// resizeCharts(); // 초기 로드 시 updateViz가 이미 차트를 그리므로 중복 호출 방지
+		// --- 반응형 차트 처리 끝 ---
 
 	});
 </script>
