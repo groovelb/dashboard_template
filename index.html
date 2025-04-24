@@ -13,6 +13,10 @@
 	<!-- <link rel="stylesheet" type="text/css" href="res/dashboard/css/chart.css"> -->
 </head>
 <body class="dark_highlight2_bg">
+	<div id="loading-screen">
+		<div class="spinner"></div>
+		<p>Loading...</p>
+	</div>
 	<!--Top Navigation-->
 	<div class="navbar-header dark_highlight_bg">
 		<!--Wrapper live area-->
@@ -576,8 +580,6 @@
 
 		window.requestAFrame = (function() {
 
-			alert(window.requestAnimationFrame);
-			
 			return window.requestAnimationFrame || 
 				   window.webkitRequestAnimationFrame ||
 				   window.mozRequestAnimationFrame ||
@@ -611,6 +613,9 @@
 		}
 		window.requestAFrame(updateViz);
 		// requestAnimationFrame(updateViz);
+
+		// 모든 초기화가 끝난 후 로딩 화면 숨기기
+		$('#loading-screen').fadeOut(500); // 0.5초 동안 서서히 사라지도록
 
 	});
 </script>
