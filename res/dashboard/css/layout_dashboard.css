@@ -10,6 +10,7 @@ body{
 }
 @media (max-width: 640px) {
 	.live_area{
+		padding: 0 16px;
 		width: 100%;
 	}
 }

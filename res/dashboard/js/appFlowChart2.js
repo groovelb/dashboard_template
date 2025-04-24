@@ -115,6 +115,14 @@ var appBlockLine;
 var appBlockLineScale;
 
 
+// --- Helper function to get dimensions ---
+function getContainerSize(selector) {
+    const container = document.querySelector(selector);
+    if (!container) return { width: 0, height: 0 };
+    const rect = container.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+}
+
 function setAppFlowChart(flowData){
 
 
@@ -915,6 +923,7 @@ function updateAppFlowChart(flowData){
 		.attr("fill","#ffffff");
 
 
+
 	/*Transition for Particle path*/
 	appFlowChart_g.select("line")
 		.transition()
@@ -1060,4 +1069,372 @@ function moveParticles(array) {
 		// IE와 공통으로 쓰기위한 로직 [2019-09-18]
 		d3.selectAll(".new_particle" +  + d.index).remove();
 	});
+}
+
+function resizeAppFlowChartElements() {
+    // 리사이즈 시에는 현재 상태(저장된 데이터 등)를 기준으로 크기만 조절
+    // updateAppFlowChart를 isResize=true로 호출하거나,
+    // 필요한 데이터(예: appFlowData 객체)를 전역 또는 다른 방식으로 접근하여 drawOrResize 호출
+    if (typeof currentAppFlowData !== 'undefined') { // currentAppFlowData가 업데이트된 데이터를 저장한다고 가정
+       drawOrResizeAppFlowElements(currentAppFlowData, true);
+    }
+}
+
+// 전역 변수 currentAppFlowData 선언 (update 시 값 저장 필요)
+let currentAppFlowData;
+
+function drawOrResizeAppFlowElements(flowData, isResize) {
+    currentAppFlowData = flowData; // 현재 데이터 저장
+
+    // === 1. App Flow Data (원통) ===
+    const appFlowDataContainerId = "#appFlowData";
+    const appFlowDataContainerSize = getContainerSize(appFlowDataContainerId);
+    const appFlowDataWidth = appFlowDataContainerSize.width;
+    // 높이는 부모 높이의 절반 또는 고정값 유지 가능
+    // const appFlowChartHeight = getContainerSize("#appFlow").height || 164; // appFlow 높이 가져오기 (fallback 포함)
+    let appFlowChartHeight = 164; // let으로 변경 (아래에서 재할당 가능성 고려)
+    const appFlowDataHeight = appFlowChartHeight / 2;
+    const appFlowDataMargin = 16;
+
+    if (appFlowDataWidth > 0 && appFlowDataHeight > 0) {
+        let appFlowDataSVG = d3.select(appFlowDataContainerId).select("svg");
+        let appFlowData_g;
+
+        if (appFlowDataSVG.empty()) {
+            appFlowDataSVG = d3.select(appFlowDataContainerId).append("svg");
+            appFlowData_g = appFlowDataSVG.append("g").attr("class", "data-circles");
+        } else {
+            appFlowData_g = appFlowDataSVG.select("g.data-circles");
+        }
+
+        appFlowDataSVG.attr("width", appFlowDataWidth).attr("height", appFlowDataHeight);
+        appFlowData_g.attr('transform', `translate(${appFlowDataMargin}, 12)`);
+
+        const app_reqData = flowData.req_data;
+        const app_resData = flowData.res_data;
+        const app_fullData = app_resData + app_reqData;
+        const app_numCircle = 40;
+        const app_numBorder = app_fullData > 0 ? parseInt((app_reqData/app_fullData)*app_numCircle) : 0;
+
+        const app_circleArray = d3.range(app_numCircle).map(i => ({
+            dataType: i < app_numBorder ? "reqData" : "resData"
+        }));
+
+        const ellipses = appFlowData_g.selectAll("ellipse")
+            .data(app_circleArray);
+
+        ellipses.enter()
+            .append("ellipse")
+            .attr("class", d => d.dataType)
+            .attr("fill", d => {
+                const color = d3.color(d.dataType === "resData" ? "#D81B60" : "#4082F3");
+                color.opacity = 0.26;
+                return color;
+            })
+            .attr("rx", 12) // 크기 고정 또는 반응형 조절 가능
+            .attr("ry", 28) // 크기 고정 또는 반응형 조절 가능
+            .attr("cy", 32) // 위치 고정 또는 반응형 조절 가능
+            .merge(ellipses) // Update existing elements
+            .attr("cx", (d, i) => {
+                const effectiveWidth = appFlowDataWidth - 2 * appFlowDataMargin;
+                return i / app_numCircle * effectiveWidth;
+            });
+
+        ellipses.exit().remove();
+
+        // Update legend values
+        d3.select("#reqData.appDataLegend").html(`전송량 <strong>${app_reqData}mb</strong>`);
+        d3.select("#resData.appDataLegend").html(`수신 <strong>${app_resData}mb</strong>`);
+    }
+
+    // === 2. App Mean Response Rate Chart ===
+    const meanResRateContainerId = "#appMeanResRateChart";
+    const meanResRateContainerSize = getContainerSize(meanResRateContainerId);
+    const meanResRateWidth = meanResRateContainerSize.width;
+    const meanResRateHeight = meanResRateContainerSize.height || 64; // 높이 fallback
+
+    if (meanResRateWidth > 0 && meanResRateHeight > 0 && flowData.mean_res_rate !== undefined) {
+        // 최초 생성 시 초기화
+        if (!appMean_res_rateSVG || appMean_res_rateSVG.empty()) {
+            appMean_res_rateSVG = d3.select(meanResRateContainerId).append("svg");
+            appMean_res_ratePath_g = appMean_res_rateSVG.append("g").attr("class", "rate-chart");
+            appMean_res_ratePath_g.append("path").attr("class", "area"); // 영역 path
+            appMean_res_ratePath_g.append("path").attr("class", "line"); // 라인 path
+            appCurrent_res_point = appMean_res_ratePath_g.append("circle") // 현재 값 점
+                                        .attr("class","current_point")
+                                        .attr("r", 2);
+            appMean_res_rateArray = []; // 데이터 배열 초기화
+            appMean_res_current_x = 0; // x축 카운터 초기화
+
+            // 스케일 초기화
+            appMean_res_xScale = d3.scaleLinear();
+            appMean_res_yScale = d3.scaleLinear().domain([0, 25]); // Y축 고정 (0~25ms 가정)
+
+            // 라인/영역 생성기
+            appMean_res_line = d3.line()
+                // .curve(d3.curveBasis) // 부드러운 곡선
+                .x(d => appMean_res_xScale(d.index))
+                .y(d => appMean_res_yScale(d.value));
+            appMean_res_area = d3.area()
+                // .curve(d3.curveBasis)
+                .x(d => appMean_res_xScale(d.index))
+                .y0(() => appMean_res_yScale.range()[0]) // Use range end
+                .y1(d => appMean_res_yScale(d.value));
+
+             // 최초 데이터 추가
+             appMean_res_rateArray.push({ index: appMean_res_current_x, value: flowData.mean_res_rate });
+
+        } else if (!isResize) {
+             // 업데이트 시 데이터 추가
+             appMean_res_current_x++;
+             appMean_res_rateArray.push({ index: appMean_res_current_x, value: flowData.mean_res_rate });
+             if (appMean_res_rateArray.length > appMean_res_Samples + 1) {
+                 appMean_res_rateArray.shift();
+             }
+        }
+
+
+        // 크기 및 마진 설정
+        const rateMargin = { top: 5, right: 5, bottom: 5, left: 5 }; // 작은 차트용 마진
+        const rateInnerWidth = meanResRateWidth - rateMargin.left - rateMargin.right;
+        const rateInnerHeight = meanResRateHeight - rateMargin.top - rateMargin.bottom;
+
+        if (rateInnerWidth > 0 && rateInnerHeight > 0) {
+            appMean_res_rateSVG.attr("width", meanResRateWidth).attr("height", meanResRateHeight);
+            appMean_res_ratePath_g.attr("transform", `translate(${rateMargin.left}, ${rateMargin.top})`);
+
+            // X 스케일 도메인 및 범위 업데이트
+             const rateXStart = appMean_res_rateArray.length > appMean_res_Samples
+                               ? appMean_res_rateArray[appMean_res_rateArray.length - appMean_res_Samples - 1].index
+                               : appMean_res_rateArray[0].index;
+            const rateXEnd = appMean_res_rateArray[appMean_res_rateArray.length - 1].index;
+            appMean_res_xScale.domain([rateXStart, rateXEnd]).range([0, rateInnerWidth]);
+
+
+            // Y 스케일 범위 업데이트
+            appMean_res_yScale.range([rateInnerHeight, 0]);
+            appMean_res_area.y0(rateInnerHeight); // Update area generator base
+
+
+            // 라인/영역 그리기
+            const lineData = appMean_res_rateArray.length > 1 ? appMean_res_rateArray : [];
+            const areaPath = appMean_res_ratePath_g.select("path.area").datum(lineData);
+            const linePath = appMean_res_ratePath_g.select("path.line").datum(lineData);
+            const currentPoint = appMean_res_ratePath_g.select("circle.current_point");
+            const lastDataPoint = appMean_res_rateArray[appMean_res_rateArray.length - 1];
+
+            if (isResize) { // 리사이즈 시 애니메이션 없이 즉시 반영
+                areaPath.attr("d", appMean_res_area);
+                linePath.attr("d", appMean_res_line);
+                currentPoint.attr("cx", appMean_res_xScale(lastDataPoint.index))
+                            .attr("cy", appMean_res_yScale(lastDataPoint.value));
+            } else { // 데이터 업데이트 시 애니메이션
+                areaPath.transition().duration(200).delay(200).attr("d", appMean_res_area);
+                linePath.transition().duration(200).delay(200).attr("d", appMean_res_line);
+                 currentPoint.transition().duration(200)
+                            .attr("cx", appMean_res_xScale(lastDataPoint.index))
+                            .attr("cy", appMean_res_yScale(lastDataPoint.value));
+            }
+        }
+
+        // 값 및 레벨 텍스트 업데이트
+        const rateValueElement = d3.select("#app_mean_res_rate");
+        rateValueElement.html(flowData.mean_res_rate);
+        const rateLevelElement = d3.select("#app_mean_res_level");
+
+        if(flowData.mean_res_rate < 2.5) {
+             rateValueElement.attr("class","normal");
+             rateLevelElement.attr("class","normal col1 text_center").html("high");
+        } else {
+             rateValueElement.attr("class","worst");
+             rateLevelElement.attr("class","worst col1 text_center").html("low");
+        }
+    }
+
+
+    // === 3. App Flow Chart (Main) ===
+    const appFlowChartContainerId = "#appFlowChart";
+    const appFlowChartContainerSize = getContainerSize(appFlowChartContainerId);
+    const appFlowChartWidth = appFlowChartContainerSize.width;
+    appFlowChartHeight = 164; // const 제거, 기존 변수에 재할당
+
+    if (appFlowChartWidth > 0 && appFlowChartHeight > 0) {
+        let appFlowChartSVG = d3.select(appFlowChartContainerId).select("svg");
+
+        // 최초 생성 로직 (기존 코드 활용)
+        if (appFlowChartSVG.empty()) {
+            isResize = false; // 생성 시에는 리사이즈 아님
+            appFlowChartSVG = d3.select(appFlowChartContainerId).append("svg");
+            appFlowChart_g = appFlowChartSVG.append("g"); // 메인 그룹
+
+            // Grid, Tunnel, Particle, Node 등 초기 설정...
+            // (기존 setAppFlowChart의 관련 코드 이동 및 수정)
+
+            // Grid 설정 (크기 동적 반영)
+            appFlowGridUnit = appFlowChartHeight/8;
+            flowStrokeScale = d3.scaleLinear().domain([0,100]).range([0, appFlowGridUnit*0.7]);
+            appFlowChart_g.append("g").attr("class", "grid-lines");
+
+            // Tunnel 설정 (크기 동적 반영)
+            maxNumTunnel = 42; // 터널 수 (고정 또는 동적)
+            appFlowTunnelScale = d3.scaleLinear().domain([0,app_numCircle]).range([0,appFlowChartWidth]);
+            appFlowTunnelSize = {width:appFlowChartWidth/app_numCircle , height:appFlowChartHeight};
+            appFlowTunnel_g = appFlowChart_g.append("g").attr("class", "tunnels");
+            appFlowNum_g = appFlowChart_g.append("g").attr("class", "tunnel-numbers");
+            // ... tunnel 데이터 생성 및 초기 그리기 ...
+
+             // 파티클 설정
+             appFlowParticleArray = [];
+             appFlowParticleScale = d3.scaleLinear().domain([0,100]).range([0,10]);
+             appParticle_group_object = d3.select("#appFlowChart_g").append("g").attr("class", "particle_g");
+             appParticle_group_set = appParticle_group_object.selectAll("g")
+                                         .data(example).enter().append("g"); // example 데이터 확인 필요
+
+             // 노드 설정
+             appNodeArray = [/* 노드 데이터 */]; // 노드 데이터 정의 필요
+             appFlowChart_g.append("g").attr("class", "nodes");
+             // ... 노드 초기 그리기 ...
+
+              // 블록 라인 설정
+              appBlockLineDataX = appFlowChartWidth / 4;
+              appBlockLineDataY = appFlowChartHeight / 4;
+              appBlockLine = d3.line()
+                             .x(d => d.x*appBlockLineDataX)
+                             .y(d => d.y*appBlockLineDataY);
+              appBlockLineScale = d3.scaleLinear().domain([0,40]).range([0,appFlowChartWidth]);
+              appFlowChart_g.append("g").attr("class", "block-lines");
+              // ... 블록 라인 초기 그리기 ...
+
+        } else {
+             // 기존 그룹 선택
+             appFlowChart_g = appFlowChartSVG.select("g"); // 메인 그룹 선택 (더 구체적 클래스 권장)
+             appFlowTunnel_g = appFlowChart_g.select("g.tunnels");
+             appFlowNum_g = appFlowChart_g.select("g.tunnel-numbers");
+             appParticle_group_object = appFlowChart_g.select("g.particle_g");
+             // ... 다른 그룹들도 선택 ...
+        }
+
+        // SVG 크기 업데이트
+        appFlowChartSVG.attr("width", appFlowChartWidth).attr("height", appFlowChartHeight);
+
+        // --- 크기 변경에 따른 요소들 업데이트 ---
+
+        // Grid 업데이트
+        appFlowGridUnit = appFlowChartHeight / 8;
+        drawGrid(appFlowChart_g.select("g.grid-lines"), appFlowChartWidth, appFlowChartHeight, appFlowGridUnit); // drawGrid 함수 필요
+
+        // Tunnel 업데이트
+        appFlowTunnelScale.range([0, appFlowChartWidth]);
+        appFlowTunnelSize = { width: appFlowChartWidth / app_numCircle, height: appFlowChartHeight };
+        // ... 터널 path, text 위치/크기 업데이트 ...
+         const app_numCircle2 = Math.ceil(flowData.flow / 10); // 터널 개수
+         const app_circleArray2 = d3.range(app_numCircle2);
+         const tunnels = appFlowTunnel_g.selectAll("path.tunnel")
+                            .data(app_circleArray2);
+         tunnels.enter().append("path").attr("class", "tunnel flowStroke")
+                // .merge(tunnels) // Update existing
+                // .transition().duration(isResize ? 0 : 200) // Apply transition conditionally
+                .attr("d", (d, i) => {
+                     const xPos = appFlowTunnelScale(i);
+                     return `M ${xPos} 0 L ${xPos + appFlowTunnelSize.width} 0 L ${xPos + appFlowTunnelSize.width} ${appFlowTunnelSize.height} L ${xPos} ${appFlowTunnelSize.height} Z`;
+                 })
+                 .attr("fill", (d, i) => tunnelColorScale(i * 100 / app_numCircle2)); // 색상 스케일 적용
+         tunnels.exit().remove();
+
+         // Tunnel 숫자 업데이트 (생략 - 필요시 추가)
+
+
+        // Particle 업데이트 (기존 로직 활용, 스케일 범위 업데이트)
+        appFlowParticleScale.range([0,10]); // 필요시 범위 조절
+        numAppFlowParticle = Math.round(appFlowParticleScale(flowData.flow_per));
+        appParticle_group_object.selectAll("g").remove(); // 간단하게 기존 파티클 제거 후 재생성
+        appParticle_group_set = appParticle_group_object.selectAll("g")
+                                   .data(d3.range(numAppFlowParticle))
+                                   .enter().append("g");
+        appFlowParticle_set = appParticle_group_set.append("circle")
+                                   .attr("class","particle")
+                                   .attr("r",2)
+                                   .attr("cx",0)
+                                   .attr("cy", d => Math.random()*appFlowChartHeight);
+        moveParticles(appFlowParticle_set); // 파티클 이동 시작
+
+        // Node 업데이트 (위치 재계산 필요)
+        appNodeArray = getNodePositions(flowData, appFlowChartWidth, appFlowChartHeight); // 노드 위치 계산 함수 필요
+        const nodes = appFlowChart_g.select("g.nodes").selectAll("g.node")
+                        .data(appNodeArray, d => d.id); // id 기준으로 데이터 바인딩
+
+        const nodeEnter = nodes.enter().append("g").attr("class", "node");
+        nodeEnter.append("circle"); // 원 추가
+        nodeEnter.append("text"); // 텍스트 추가
+
+        nodes.merge(nodeEnter)
+             // .transition().duration(isResize ? 0 : 200)
+             .attr("transform", d => `translate(${d.x}, ${d.y})`)
+             .select("circle")
+             .attr("r", d => d.radius)
+             .attr("class", d => d.type + "_node node_circle"); // 클래스 적용
+
+        nodes.merge(nodeEnter)
+            .select("text")
+            .text(d => d.label) // 노드 라벨
+            .attr("text-anchor", "middle")
+            .attr("dy", d => d.radius + 12); // 텍스트 위치 조절
+
+        nodes.exit().remove();
+
+
+        // Block Line 업데이트
+        appBlockLineDataX = appFlowChartWidth / 4;
+        appBlockLineDataY = appFlowChartHeight / 4;
+        appBlockLine.x(d => d.x*appBlockLineDataX).y(d => d.y*appBlockLineDataY); // 생성기 업데이트
+        appBlockLineScale.range([0, appFlowChartWidth]); // 스케일 업데이트
+        // ... 블록 라인 path 업데이트 ...
+        const blockLines = appFlowChart_g.select("g.block-lines").selectAll("path.block-line")
+                           .data([ flowData.user_block, flowData.application_block, flowData.source_block, flowData.flow_block ]); // 블록 데이터
+
+        blockLines.enter().append("path").attr("class", "blockLine block-line")
+                  .merge(blockLines)
+                  // .transition().duration(isResize ? 0 : 200)
+                  .attr("d", appBlockLine(appBlockLineData)) // 고정된 라인 데이터 사용? 확인 필요
+                  .attr("transform", (d, i) => `translate(${appBlockLineScale(d)}, 0)`); // 위치 업데이트
+
+        blockLines.exit().remove();
+
+
+        // ... (기존 코드에서 크기/위치 관련 부분들을 동적 계산 값으로 수정) ...
+    }
+
+}
+
+// Helper function to draw grid lines (implementation needed)
+function drawGrid(selection, width, height, gridUnit) {
+   selection.selectAll("*").remove(); // Clear previous grid
+   // Draw vertical lines
+   selection.selectAll("line.vertical")
+        .data(d3.range(0, width + 1, gridUnit * 2)) // Adjust step as needed
+        .enter().append("line")
+        .attr("class", "vertical grid line axis_light")
+        .attr("x1", d => d).attr("x2", d => d)
+        .attr("y1", 0).attr("y2", height);
+   // Draw horizontal lines
+   selection.selectAll("line.horizontal")
+        .data(d3.range(0, height + 1, gridUnit)) // Adjust step as needed
+        .enter().append("line")
+        .attr("class", "horizontal grid line axis_light")
+        .attr("x1", 0).attr("x2", width)
+        .attr("y1", d => d).attr("y2", d => d);
+}
+
+// Helper function to calculate node positions (implementation needed)
+function getNodePositions(flowData, chartWidth, chartHeight) {
+    // Based on flowData and dimensions, calculate and return an array of node objects
+    // Example node object: { id: 'user', type: 'user', label: 'User', x: chartWidth * 0.1, y: chartHeight / 2, radius: 15 }
+    // Implement actual positioning logic here
+     return [
+         { id: 'user', type: 'user', label: 'Node1', x: chartWidth * 0.1, y: chartHeight / 2, radius: 15 + flowData.user / 5 },
+         { id: 'app', type: 'app', label: 'Node2', x: chartWidth * 0.3, y: chartHeight / 2, radius: 15 + flowData.application / 5 },
+         { id: 'departure', type: 'departure', label: 'Node3', x: chartWidth * 0.5, y: chartHeight / 2, radius: 15 + flowData.source / 5 },
+         { id: 'service', type: 'service', label: 'Node4', x: chartWidth * 0.7, y: chartHeight / 2, radius: 15 + flowData.service / 5 },
+         { id: 'arrival', type: 'arrival', label: 'Node5', x: chartWidth * 0.9, y: chartHeight / 2, radius: 15 + flowData.destination / 5 }
+     ];
 }

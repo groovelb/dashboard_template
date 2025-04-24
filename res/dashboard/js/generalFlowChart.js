@@ -1086,3 +1086,292 @@ function updateGeneralFlowChart(flowData) {
 		.text(flowData.flow);
 
 }
+
+function resizeGeneralFlowChartElements() {
+	// 리사이즈 시에는 현재 상태(저장된 데이터 등)를 기준으로 크기만 조절
+	if (typeof currentGeneralFlowData !== 'undefined') { // currentGeneralFlowData가 업데이트된 데이터를 저장한다고 가정
+		drawOrResizeGeneralFlowElements(currentGeneralFlowData, true);
+	}
+}
+
+// 전역 변수 currentGeneralFlowData 선언 (update 시 값 저장 필요)
+let currentGeneralFlowData;
+
+function drawOrResizeGeneralFlowElements(flowData, isResize) {
+	currentGeneralFlowData = flowData; // 현재 데이터 저장
+
+	// === 1. General Flow Data (원통) ===
+	const generalFlowDataContainerId = "#generalFlowData";
+	const generalFlowDataContainerSize = getContainerSize(generalFlowDataContainerId);
+	const generalFlowDataWidth = generalFlowDataContainerSize.width;
+	const generalFlowChartHeight = 164; // 임시로 고정값 유지
+	const generalFlowDataHeight = generalFlowChartHeight / 2;
+	const generalFlowDataMargin = 16;
+
+	if (generalFlowDataWidth > 0 && generalFlowDataHeight > 0) {
+		let generalFlowDataSVG = d3.select(generalFlowDataContainerId).select("svg");
+		let generalFlowData_g;
+
+		if (generalFlowDataSVG.empty()) {
+			generalFlowDataSVG = d3.select(generalFlowDataContainerId).append("svg");
+			generalFlowData_g = generalFlowDataSVG.append("g").attr("class", "data-circles");
+		} else {
+			generalFlowData_g = generalFlowDataSVG.select("g.data-circles");
+		}
+
+		generalFlowDataSVG.attr("width", generalFlowDataWidth).attr("height", generalFlowDataHeight);
+		generalFlowData_g.attr('transform', `translate(${generalFlowDataMargin}, 12)`);
+
+		const general_reqData = flowData.req_data;
+		const general_resData = flowData.res_data;
+		const general_fullData = general_resData + general_reqData;
+		const general_numCircle = 40;
+		const general_numBorder = general_fullData > 0 ? parseInt((general_reqData / general_fullData) * general_numCircle) : 0;
+
+		const general_circleArray = d3.range(general_numCircle).map(i => ({
+			dataType: i < general_numBorder ? "reqData" : "resData"
+		}));
+
+		const ellipses = generalFlowData_g.selectAll("ellipse")
+			.data(general_circleArray);
+
+		ellipses.enter()
+			.append("ellipse")
+			.attr("class", d => d.dataType)
+			.attr("fill", d => {
+				const color = d3.color(d.dataType === "resData" ? "#D81B60" : "#004AE4"); // 색상 확인 필요
+				color.opacity = 0.26;
+				return color;
+			})
+			.attr("rx", 12)
+			.attr("ry", 28)
+			.attr("cy", 32)
+			.merge(ellipses)
+			.attr("cx", (d, i) => {
+				const effectiveWidth = generalFlowDataWidth - 2 * generalFlowDataMargin;
+				return i / general_numCircle * effectiveWidth;
+			});
+
+		ellipses.exit().remove();
+
+		// Update legend values
+		d3.select("#generalFlowDataLegend #reqData.appDataLegend").html(`part1 <strong>${general_reqData}mb</strong>`); // ID 선택자 수정
+		d3.select("#generalFlowDataLegend #resData.appDataLegend").html(`part2 <strong>${general_resData}mb</strong>`); // ID 선택자 수정
+	}
+
+	// === 2. General Mean Response Rate Chart ===
+	const genMeanResRateContainerId = "#generalMeanResRateChart";
+	const genMeanResRateContainerSize = getContainerSize(genMeanResRateContainerId);
+	const genMeanResRateWidth = genMeanResRateContainerSize.width;
+	const genMeanResRateHeight = genMeanResRateContainerSize.height || 64;
+
+	if (genMeanResRateWidth > 0 && genMeanResRateHeight > 0 && flowData.mean_res_rate !== undefined) {
+
+		if (!generalMean_res_rateSVG || generalMean_res_rateSVG.empty()) {
+			generalMean_res_rateSVG = d3.select(genMeanResRateContainerId).append("svg");
+			generalMean_res_ratePath_g = generalMean_res_rateSVG.append("g").attr("class", "rate-chart");
+			generalMean_res_ratePath_g.append("path").attr("class", "area");
+			generalMean_res_ratePath_g.append("path").attr("class", "line");
+			generalCurrent_res_point = generalMean_res_ratePath_g.append("circle")
+										 .attr("class", "current_point")
+										 .attr("r", 2);
+			generalMean_res_rateArray = [];
+			generalMean_res_current_x = 0;
+			generalMean_res_xScale = d3.scaleLinear();
+			generalMean_res_yScale = d3.scaleLinear().domain([0, 25]);
+			generalMean_res_line = d3.line()
+				.x(d => generalMean_res_xScale(d.index))
+				.y(d => generalMean_res_yScale(d.value));
+			generalMean_res_area = d3.area()
+				.x(d => generalMean_res_xScale(d.index))
+				.y0(() => generalMean_res_yScale.range()[0])
+				.y1(d => generalMean_res_yScale(d.value));
+			generalMean_res_rateArray.push({ index: generalMean_res_current_x, value: flowData.mean_res_rate });
+		} else if (!isResize) {
+			generalMean_res_current_x++;
+			generalMean_res_rateArray.push({ index: generalMean_res_current_x, value: flowData.mean_res_rate });
+			if (generalMean_res_rateArray.length > generalMean_res_Samples + 1) {
+				generalMean_res_rateArray.shift();
+			}
+		}
+
+		const rateMargin = { top: 5, right: 5, bottom: 5, left: 5 };
+		const rateInnerWidth = genMeanResRateWidth - rateMargin.left - rateMargin.right;
+		const rateInnerHeight = genMeanResRateHeight - rateMargin.top - rateMargin.bottom;
+
+		if (rateInnerWidth > 0 && rateInnerHeight > 0) {
+			generalMean_res_rateSVG.attr("width", genMeanResRateWidth).attr("height", genMeanResRateHeight);
+			generalMean_res_ratePath_g.attr("transform", `translate(${rateMargin.left}, ${rateMargin.top})`);
+
+			const rateXStart = generalMean_res_rateArray.length > generalMean_res_Samples
+							   ? generalMean_res_rateArray[generalMean_res_rateArray.length - generalMean_res_Samples - 1].index
+							   : generalMean_res_rateArray[0].index;
+			const rateXEnd = generalMean_res_rateArray[generalMean_res_rateArray.length - 1].index;
+			generalMean_res_xScale.domain([rateXStart, rateXEnd]).range([0, rateInnerWidth]);
+
+			generalMean_res_yScale.range([rateInnerHeight, 0]);
+			generalMean_res_area.y0(rateInnerHeight);
+
+			const lineData = generalMean_res_rateArray.length > 1 ? generalMean_res_rateArray : [];
+			const areaPath = generalMean_res_ratePath_g.select("path.area").datum(lineData);
+			const linePath = generalMean_res_ratePath_g.select("path.line").datum(lineData);
+			const currentPoint = generalMean_res_ratePath_g.select("circle.current_point");
+			const lastDataPoint = generalMean_res_rateArray[generalMean_res_rateArray.length - 1];
+
+			if (isResize) {
+				areaPath.attr("d", generalMean_res_area);
+				linePath.attr("d", generalMean_res_line);
+				currentPoint.attr("cx", generalMean_res_xScale(lastDataPoint.index))
+							.attr("cy", generalMean_res_yScale(lastDataPoint.value));
+			} else {
+				areaPath.transition().duration(200).delay(200).attr("d", generalMean_res_area);
+				linePath.transition().duration(200).delay(200).attr("d", generalMean_res_line);
+				currentPoint.transition().duration(200)
+							.attr("cx", generalMean_res_xScale(lastDataPoint.index))
+							.attr("cy", generalMean_res_yScale(lastDataPoint.value));
+			}
+		}
+
+		const rateValueElement = d3.select("#general_mean_res_rate");
+		rateValueElement.html(flowData.mean_res_rate);
+		const rateLevelElement = d3.select("#general_mean_res_level");
+
+		if(flowData.mean_res_rate < 2.5) {
+			 rateValueElement.attr("class","normal");
+			 rateLevelElement.attr("class","normal col1 text_center").html("high");
+		} else {
+			 rateValueElement.attr("class","worst");
+			 rateLevelElement.attr("class","worst col1 text_center").html("low");
+		}
+	}
+
+	// === 3. General Flow Chart (Main) ===
+	const generalFlowChartContainerId = "#generalFlowChart";
+	const generalFlowChartContainerSize = getContainerSize(generalFlowChartContainerId);
+	const generalFlowChartWidth = generalFlowChartContainerSize.width;
+	const generalChartHeight = 164; // 높이 고정
+
+	if (generalFlowChartWidth > 0 && generalChartHeight > 0) {
+		let generalFlowChartSVG = d3.select(generalFlowChartContainerId).select("svg");
+
+		if (generalFlowChartSVG.empty()) {
+			isResize = false;
+			generalFlowChartSVG = d3.select(generalFlowChartContainerId).append("svg");
+			generalFlowChart_g = generalFlowChartSVG.append("g");
+
+			// Grid, Tunnel, Particle, Node, Block Line 초기 설정...
+			// (appFlowChart2.js의 유사 코드 참고하여 수정)
+			generalFlowGridUnit = generalChartHeight / 8;
+			generalFlowChart_g.append("g").attr("class", "grid-lines");
+			generalFlowTunnelScale = d3.scaleLinear().range([0, generalFlowChartWidth]);
+			generalFlowTunnel_g = generalFlowChart_g.append("g").attr("class", "tunnels");
+			generalFlowNum_g = generalFlowChart_g.append("g").attr("class", "tunnel-numbers");
+			generalFlowParticleScale = d3.scaleLinear().domain([0, 100]).range([0, 10]);
+			generalParticle_group_object = generalFlowChart_g.append("g").attr("class", "particle_g");
+			generalFlowChart_g.append("g").attr("class", "nodes");
+			generalBlockLine = d3.line();
+			generalBlockLineScale = d3.scaleLinear().range([0, generalFlowChartWidth]);
+			generalFlowChart_g.append("g").attr("class", "block-lines");
+
+		} else {
+			 generalFlowChart_g = generalFlowChartSVG.select("g");
+			 generalFlowTunnel_g = generalFlowChart_g.select("g.tunnels");
+			 generalFlowNum_g = generalFlowChart_g.select("g.tunnel-numbers");
+			 generalParticle_group_object = generalFlowChart_g.select("g.particle_g");
+			 // ... 다른 그룹 선택 ...
+		}
+
+		generalFlowChartSVG.attr("width", generalFlowChartWidth).attr("height", generalChartHeight);
+
+		// --- 크기 변경에 따른 요소들 업데이트 ---
+		generalFlowGridUnit = generalChartHeight / 8;
+		drawGrid(generalFlowChart_g.select("g.grid-lines"), generalFlowChartWidth, generalChartHeight, generalFlowGridUnit);
+
+		general_numCircle2 = Math.ceil(flowData.flow / 10);
+		general_circleArray2 = d3.range(general_numCircle2);
+		generalFlowTunnelScale.domain([0, general_numCircle]).range([0, generalFlowChartWidth]); // 도메인 확인 필요
+		generalFlowTunnelSize = { width: generalFlowChartWidth / general_numCircle, height: generalChartHeight };
+		const tunnels = generalFlowTunnel_g.selectAll("path.tunnel")
+						   .data(general_circleArray2);
+		tunnels.enter().append("path").attr("class", "tunnel flowStroke")
+			   .merge(tunnels)
+			   .attr("d", (d, i) => {
+					const xPos = generalFlowTunnelScale(i);
+					return `M ${xPos} 0 L ${xPos + generalFlowTunnelSize.width} 0 L ${xPos + generalFlowTunnelSize.width} ${generalFlowTunnelSize.height} L ${xPos} ${generalFlowTunnelSize.height} Z`;
+				})
+				.attr("fill", (d, i) => tunnelColorScale(i * 100 / general_numCircle2));
+		tunnels.exit().remove();
+
+		numgeneralFlowParticle = Math.round(generalFlowParticleScale(flowData.flow_per));
+		generalParticle_group_object.selectAll("g").remove();
+		generalParticle_group_set = generalParticle_group_object.selectAll("g")
+								  .data(d3.range(numgeneralFlowParticle))
+								  .enter().append("g");
+		generalFlowParticle_set = generalParticle_group_set.append("circle")
+								  .attr("class", "particle")
+								  .attr("r", 2)
+								  .attr("cx", 0)
+								  .attr("cy", d => Math.random() * generalChartHeight);
+		moveParticlesGeneral(generalFlowParticle_set, generalFlowChartWidth, generalChartHeight); // 별도 함수 사용
+
+		generalNodeArray = getGeneralNodePositions(flowData, generalFlowChartWidth, generalChartHeight);
+		const nodes = generalFlowChart_g.select("g.nodes").selectAll("g.node")
+					   .data(generalNodeArray, d => d.id);
+		const nodeEnter = nodes.enter().append("g").attr("class", "node");
+		nodeEnter.append("circle");
+		nodeEnter.append("text");
+		nodes.merge(nodeEnter)
+			 .attr("transform", d => `translate(${d.x}, ${d.y})`)
+			 .select("circle")
+			 .attr("r", d => d.radius)
+			 .attr("class", d => d.type + "_node node_circle");
+		nodes.merge(nodeEnter)
+			 .select("text")
+			 .text(d => d.label)
+			 .attr("text-anchor", "middle")
+			 .attr("dy", d => d.radius + 12);
+		nodes.exit().remove();
+
+		generalBlockLineDataX = generalFlowChartWidth / 4;
+		generalBlockLineDataY = generalChartHeight / 4;
+		generalBlockLine.x(d => d.x * generalBlockLineDataX).y(d => d.y * generalBlockLineDataY);
+		generalBlockLineScale.domain([0, 40]).range([0, generalFlowChartWidth]); // 도메인 확인 필요
+		const blockLines = generalFlowChart_g.select("g.block-lines").selectAll("path.block-line")
+						   .data([flowData.user_block, flowData.application_block, flowData.source_block, flowData.flow_block]); // 데이터 확인 필요
+		blockLines.enter().append("path").attr("class", "blockLine block-line")
+				  .merge(blockLines)
+				  .attr("d", generalBlockLine(generalBlockLineData)) // 고정 데이터 사용?
+				  .attr("transform", (d, i) => `translate(${generalBlockLineScale(d)}, 0)`);
+		blockLines.exit().remove();
+
+	}
+}
+
+// Helper function to draw grid lines (appFlowChart2.js 와 동일)
+// function drawGrid(selection, width, height, gridUnit) { ... }
+
+// Helper function for General Node Positions
+function getGeneralNodePositions(flowData, chartWidth, chartHeight) {
+	 // user, departure, service, arrival 위치 계산
+	 return [
+		 { id: 'user', type: 'user', label: 'Node1', x: chartWidth * 0.15, y: chartHeight / 2, radius: 15 + flowData.user / 5 },
+		 { id: 'departure', type: 'departure', label: 'Node2', x: chartWidth * 0.4, y: chartHeight / 2, radius: 15 + flowData.source / 5 },
+		 { id: 'service', type: 'service', label: 'Node3', x: chartWidth * 0.65, y: chartHeight / 2, radius: 15 + flowData.service / 5 },
+		 { id: 'arrival', type: 'arrival', label: 'Node4', x: chartWidth * 0.9, y: chartHeight / 2, radius: 15 + flowData.destination / 5 }
+	 ];
+}
+
+// moveParticlesGeneral 함수 (기존 moveParticles와 유사하게)
+function moveParticlesGeneral(array, chartWidth, chartHeight) {
+	const duration = 1800; // 기존 particleDuration 값
+	array.transition()
+		.duration(duration)
+		.ease(d3.easeLinear)
+		.attr("cx", chartWidth)
+		.on('end', function() {
+			d3.select(this)
+			  .attr("cx", 0)
+			  .attr("cy", d => Math.random() * chartHeight);
+			moveParticlesGeneral(d3.select(this), chartWidth, chartHeight);
+		});
+}

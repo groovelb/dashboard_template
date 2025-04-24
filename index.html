@@ -660,29 +660,39 @@
 		// --- 반응형 차트 처리 시작 ---
 		function resizeCharts() {
 			console.log("Resizing charts..."); // 디버깅용 로그
-			// 각 차트 업데이트 함수 호출 (데이터는 업데이트하지 않고 크기만 조절하도록 각 JS 파일 수정 필요)
-			// 임시로 기존 업데이트 함수 호출 (데이터도 함께 업데이트됨)
-			if (typeof updateAppFlowChart === 'function' && typeof appFlowData !== 'undefined') {
-				updateAppFlowChart(appFlowData);
-			}
-			if (typeof updateGeneralFlowChart === 'function' && typeof generalFlowData !== 'undefined') {
-				updateGeneralFlowChart(generalFlowData);
-			}
-			if (typeof updateSystemManageIndicator === 'function' && typeof systemIndicatorData !== 'undefined') {
-				updateSystemManageIndicator(systemIndicatorData);
-			}
-			if (typeof updateThreatEvent === 'function' && typeof threatData !== 'undefined') {
-				updateThreatEvent(threatData);
+
+			// App Flow Chart 리사이즈 호출
+			if (typeof resizeAppFlowChartElements === 'function') {
+				resizeAppFlowChartElements();
 			}
 
-			// 라인 차트 업데이트 (데이터 구조 고려)
-			if (typeof status_list !== 'undefined' && typeof updateSystemIndicator === 'function') {
-				status_list.forEach((status_item) => {
-					// 현재는 데이터도 랜덤으로 재생성됨. 크기만 조절하도록 수정 필요.
-					let data = randomValueForGraph(); // 임시로 새 데이터 사용
-					updateSystemIndicator(status_item, data);
-				});
+			// General Flow Chart 리사이즈 호출
+			if (typeof resizeGeneralFlowChartElements === 'function') {
+				resizeGeneralFlowChartElements();
 			}
+
+			// System Manage Indicator (keyMeasurement.js) 리사이즈 - 함수명 확인 필요
+			if (typeof resizeSystemManageIndicator === 'function') { // 예시 함수명
+				resizeSystemManageIndicator();
+			} else if (typeof updateSystemManageIndicator === 'function' && typeof systemIndicatorData !== 'undefined') {
+				// 임시: update 함수 호출 (데이터 변경 가능성 있음)
+				// updateSystemManageIndicator(systemIndicatorData);
+			}
+
+			// Threat Event (keyMeasurement.js) 리사이즈 - 함수명 확인 필요
+			if (typeof resizeThreatEvent === 'function') { // 예시 함수명
+				resizeThreatEvent();
+			} else if (typeof updateThreatEvent === 'function' && typeof threatData !== 'undefined') {
+				// 임시: update 함수 호출 (데이터 변경 가능성 있음)
+				// updateThreatEvent(threatData);
+			}
+
+			// 라인 차트 리사이즈 호출 (Comparable Indicators)
+			if (typeof status_list !== 'undefined' && typeof resizeSystemIndicator === 'function') {
+				status_list.forEach((status_item) => {
+					resizeSystemIndicator(status_item); // 리사이즈 전용 함수 호출
+				});
+			} 
 		}
 
 		// Debounce resize event
