@@ -8,6 +8,11 @@ body{
 	margin-left:auto;
 	margin-right:auto;
 }
+@media (max-width: 640px) {
+	.live_area{
+		width: 100%;
+	}
+}
 .col1{
 	width: 100%;
 }
